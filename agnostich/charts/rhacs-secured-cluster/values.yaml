@@ -1,0 +1,10 @@
+#Sonarqube Chart Values
+
+rhacsSecuredCluster:
+  name: cluster
+  namespace: stackrox
+  central:
+    url: ""
+    endpoint: ""
+    username: ""
+    password: ""

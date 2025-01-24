@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: configure-argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "6"
+spec:
+  backoffLimit: 100
+  template:
+    spec:
+      containers:
+      - name: configure-argocd
+        command:
+            - /bin/bash
+            - -c
+            - |
+              sh /configure-argocd/configure-argocd.sh
+        image: registry.redhat.io/openshift4/ose-cli:v4.7
+        volumeMounts:
+          - mountPath: /configure-argocd
+            name: configure-argocd-volume
+      restartPolicy: Never
+      serviceAccount: openshift-gitops-operator-sa
+      volumes:
+      - name: configure-argocd-volume
+        configMap:
+          name: cm-configure-argocd
