@@ -1,6 +1,0 @@
-#Sonarqube Chart Values
-
-rhacs:
-  namespace: rhacs-operator
-  channel: latest
-  startingCSV: rhacs-operator.v3.74.1
