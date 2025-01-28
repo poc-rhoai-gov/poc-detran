@@ -6,10 +6,14 @@ components:
     container:
       image: quay.io/devfile/universal-developer-image:ubi8-8fca167
       env:
-        - name: QUARKUS_HTTP_HOST
-          value: 0.0.0.0
-        - name: MAVEN_OPTS
-          value: "-Dmaven.repo.local=/home/user/.m2/repository"
+        - name: PYTHONPATH
+          value: /projects
+        - name: PYTHONUNBUFFERED # Needs doublechecking
+          value: "1" # Needs doublechecking 
+        - name: JUPYTER_ENABLE_LAB # Needs doublechecking
+          value: "true" # Needs doublechecking 
+        - name: JUPYTER_TOKEN # Needs doublechecking
+          value: "dev" # Needs doublechecking
       memoryLimit: 5Gi
       cpuLimit: 2500m
       volumeMounts:
@@ -19,20 +23,25 @@ components:
         - name: home
           path: /projects/home
 {%- endif %}
+
+      # ==========================================
+      # TODO: Needs validation
+      # ==========================================
       endpoints:
-        - name: quarkus-dev
+        - name: jupyter
+          targetPort: 8888
+          exposure: public
+          secure: false
+          protocol: http
+          path: /
+        - name: python-api
           targetPort: 8080
           exposure: public
           secure: false
-          protocol: https
+          protocol: http
           path: /
         - name: debug
-          targetPort: 5005
-          exposure: none
-          secure: false
-          protocol: tcp
-        - name: tests
-          targetPort: 8081
+          targetPort: 5678
           exposure: none
           secure: false
           protocol: tcp
