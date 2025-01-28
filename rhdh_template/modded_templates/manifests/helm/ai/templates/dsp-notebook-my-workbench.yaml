@@ -103,17 +103,12 @@ spec:
                   - /bin/bash
                   - '-ec'
                   - >-
-                    rm -rf check-confidence-self-hosted-llm
+                    rm -rf check-confidence-poc-detran
 
-                    git clone https://{{ .Values.git.host}}/workbench-setup/check-confidence-self-hosted-llm.git
+                    git clone https://{{ .Values.git.host}}/workbench-setup/check-confidence-poc-detran.git
 
-                    sed -i 's/VAR_MODEL_NAME/{{ .Values.app.model.name }}/g' check-confidence-self-hosted-llm/*
+                    sed -i 's/VAR_NAMESPACE/{{ .Values.app.namespace }}/g' check-confidence-poc-detran/*
 
-                    sed -i 's/VAR_NAMESPACE/{{ .Values.app.namespace }}/g' check-confidence-self-hosted-llm/*
-
-                    pip install langchain langchain_community openai
-
-                    pip install -U langchain-huggingface
         - resources:
             limits:
               cpu: 100m

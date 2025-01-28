@@ -20,7 +20,14 @@ WorkSpaces are triggered by accessing the URL of the workspace. This URL is defi
 
 Milestone 1:
 
-- clean template.yaml
-- adapt showcase-templates.yaml
-- clean ./skeleton
-- adapt ./manifest.yaml
+- clean template.yaml - DONE
+- adapt showcase-templates.yaml - DONE
+- clean ./skeleton - DONE
+- adapt ./manifest.yaml - DONE
+
+Milestone 2:
+
+- ArgoCD Configs
+    - build helm
+    - app helm
+    - ai helm
