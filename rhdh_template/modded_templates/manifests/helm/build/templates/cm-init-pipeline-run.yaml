@@ -48,8 +48,8 @@ data:
           value: $(tt.params.git-committer)
         - name: oidc-issuer
           value: https://keycloak-rhsso{{ .Values.app.cluster }}/auth/realms/openshift
-        - name: maven-image
-          value: registry.redhat.io/ubi9/openjdk-21
+        - name: python-image
+          value: registry.redhat.io/ubi9/python-311
       pipelineRef:
         name: {{ .Values.app.name }}-build
       serviceAccountName: pipeline

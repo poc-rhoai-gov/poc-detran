@@ -12,7 +12,6 @@ spec:
   description: |-
     Buildah task builds source code into a container image and pushes the image into container registry using buildah tool.
     In addition it generates a SBOM file, injects the SBOM file into final container image and pushes the SBOM file as separate image using cosign tool.
-    When [Java dependency rebuild](https://redhat-appstudio.github.io/docs.stonesoup.io/Documentation/main/cli/proc_enabled_java_dependencies.html) is enabled it triggers rebuilds of Java artifacts.
     When prefetch-dependencies task was activated it is using its artifacts to run build in hermetic environment.
   params:
   - description: Reference of the image buildah will produce.
@@ -61,11 +60,6 @@ spec:
     name: IMAGE_URL
   - description: Digests of the base images used for build
     name: BASE_IMAGES_DIGESTS
-  - name: SBOM_JAVA_COMPONENTS_COUNT
-    description: The counting of Java components by publisher in JSON format
-    type: string
-  - name: JAVA_COMMUNITY_DEPENDENCIES
-    description: The Java dependencies that came from community sources such as Maven central.
   stepTemplate:
     env:
     - name: BUILDAH_FORMAT
@@ -122,10 +116,6 @@ spec:
       else
         echo "Cannot find Dockerfile $DOCKERFILE"
         exit 1
-      fi
-      if [ -n "$JVM_BUILD_WORKSPACE_ARTIFACT_CACHE_PORT_80_TCP_ADDR" ] && grep -q '^\s*RUN \(./\)\?mvn' "$dockerfile_path"; then
-        sed -i -e "s|^\s*RUN \(\(./\)\?mvn\(.*\)\)|RUN echo \"<settings><mirrors><mirror><id>mirror.default</id><url>http://$JVM_BUILD_WORKSPACE_ARTIFACT_CACHE_PORT_80_TCP_ADDR/v1/cache/default/0/</url><mirrorOf>*</mirrorOf></mirror></mirrors></settings>\" > /tmp/settings.yaml; \1 -s /tmp/settings.yaml|g" "$dockerfile_path"
-        touch /var/lib/containers/java
       fi
 
       # Fixing group permission on /var/lib/containers
@@ -196,20 +186,6 @@ spec:
     volumeMounts:
     - mountPath: /var/lib/containers
       name: varlibcontainers
-  - name: analyse-dependencies-java-sbom
-    image: quay.io/redhat-appstudio/hacbs-jvm-build-request-processor:1d417e6f1f3e68c6c537333b5759796eddae0afc
-    script: |
-      if [ -f /var/lib/containers/java ]; then
-        /opt/jboss/container/java/run/run-java.sh analyse-dependencies path $(cat /workspace/container_path) -s $(workspaces.source.path)/sbom-image.json --task-run-name $(context.taskRun.name) --publishers $(results.SBOM_JAVA_COMPONENTS_COUNT.path)
-        sed -i 's/^/ /' $(results.SBOM_JAVA_COMPONENTS_COUNT.path) # Workaround for SRVKP-2875
-      else
-        touch $(results.JAVA_COMMUNITY_DEPENDENCIES.path)
-      fi
-    volumeMounts:
-    - mountPath: /var/lib/containers
-      name: varlibcontainers
-    securityContext:
-      runAsUser: 0
 
   - name: merge-syft-sboms
     image: registry.access.redhat.com/ubi9/python-39:1-143.1696863474

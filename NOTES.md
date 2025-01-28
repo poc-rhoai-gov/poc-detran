@@ -28,6 +28,19 @@ Milestone 1:
 Milestone 2:
 
 - ArgoCD Configs
-    - build helm
-    - app helm
-    - ai helm
+    - build helm - DONE
+    - app helm - DONE
+    - ai helm - DONE
+
+Milestone 3:
+
+-  Check build process
+-  Check pipelines 
+    - SonarQube configs
+    - StackRocks Configs
+    - RHTAP configs
+
+Milestone 4:
+
+- Check app helm
+    - templates check for maven refs

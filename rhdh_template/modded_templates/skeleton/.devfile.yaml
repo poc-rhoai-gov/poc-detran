@@ -116,19 +116,11 @@ components:
 commands:
   - id: package
     exec:
-      label: "1. Package the application"
+      label: "1. Install dependencies"
       component: development-tooling
-      commandLine: "./mvnw package"
+      commandLine: "pip install -r requirements.txt"
       group:
         kind: build
-        isDefault: true
-  - id: start-dev
-    exec:
-      label: "2. Start Development mode (Hot reload + debug)"
-      component: development-tooling
-      commandLine: "./mvnw compile quarkus:dev"
-      group:
-        kind: run
         isDefault: true
 {%- if values.verify_commits == 'enabled' %}
   - apply:

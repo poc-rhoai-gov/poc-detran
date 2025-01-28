@@ -62,21 +62,6 @@ spec:
         echo -n "--insecure-skip-tls-verify") \
         -e "$(params.rox_central_endpoint)" --image "$IMAGE" --output json > roxctl_output.json
       cat roxctl_output.json >  $(workspaces.reports.path)/image-scan
-  - image: 'quay.io/lrangine/crda-maven:11.0'
-    name: export-vulnerabilities
-    script: |
-        #!/bin/sh
-        jq -rce \
-        "{vulnerabilities:{
-        critical: (.result.summary.CRITICAL),
-        high: (.result.summary.IMPORTANT),
-        medium: (.result.summary.MODERATE),
-        low: (.result.summary.LOW)
-        }}" $(workspaces.reports.path)/image-scan | tee $(results.SCAN_OUTPUT.path)
-  - image: 'quay.io/lrangine/crda-maven:11.0'
-    name: report
-    script: |
-        #!/bin/sh
-        cat $(workspaces.reports.path)/image-scan
+
   workspaces:
     - name: reports
