@@ -11,6 +11,6 @@ COPY --chown=185 requirements.txt /app/
 # Jupyter notebooks
 COPY --chown=185 src/notebooks/ /app/notebooks/   
 
-EXPOSE 8000
+EXPOSE 8080
 USER 185
 

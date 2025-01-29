@@ -36,7 +36,7 @@ spec:
           image: {{ include "python-app.image" . }}
           ports:
             - name: http
-              containerPort: 8000
+              containerPort: 8080
               protocol: TCP
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           resources:
