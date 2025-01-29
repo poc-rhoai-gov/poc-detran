@@ -95,8 +95,6 @@ spec:
         value: $(params.sonarqube-project-key)
       - name: sonarqubeProjectSecret
         value: $(params.sonarqube-project-secret)
-      runAfter:
-      - scan-source
       taskRef:
         kind: Task
         name: scan-code
