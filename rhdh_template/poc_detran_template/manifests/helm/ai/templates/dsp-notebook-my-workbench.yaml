@@ -3,11 +3,11 @@ kind: Notebook
 metadata:
   annotations:
     notebooks.opendatahub.io/inject-oauth: 'true'
-    opendatahub.io/image-display-name: CUSTOM - Insurance Claim Processing Lab Workbench
+    opendatahub.io/image-display-name: CUSTOM - Vehicle Detection Workbench
     notebooks.opendatahub.io/oauth-logout-url: {{ .Values.app.dashboard.route }}/projects/{{ .Values.app.namespace }}?notebookLogout={{ .Values.app.workbench.name }}
     opendatahub.io/accelerator-name: ''
     openshift.io/description: ''
-    openshift.io/display-name: My Workbench
+    openshift.io/display-name: PoC RHOAI Workbench
     notebooks.opendatahub.io/last-image-selection: {{ .Values.app.workbench.image }}
     notebooks.opendatahub.io/last-size-selection: Standard
     opendatahub.io/username: {{ .Values.app.user }}
@@ -23,6 +23,26 @@ spec:
   template:
     spec:
       affinity: {}
+      initContainers:
+        - name: init-mysql
+          image: registry.redhat.io/rhel8/mysql-80
+          env:
+            - name: MYSQL_USER
+              value: hpfeffer
+            - name: MYSQL_PASSWORD
+              value: hpfeffer  
+            - name: MYSQL_DATABASE
+              value: traffic_violations_db
+            - name: MYSQL_ROOT_PASSWORD
+              value: admin
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: mysql-data
+              mountPath: /var/lib/mysql/data
+      volumes:
+        - name: mysql-data
+          emptyDir: {}
       containers:
         - resources:
             limits:
@@ -103,11 +123,11 @@ spec:
                   - /bin/bash
                   - '-ec'
                   - >-
-                    rm -rf check-confidence-poc-detran
+                    rm -rf traffiic-violation-detection
 
-                    git clone https://{{ .Values.git.host}}/workbench-setup/check-confidence-poc-detran.git
+                    git clone https://{{ .Values.git.host}}/workbench-setup/traffiic-violation-detection.git
 
-                    sed -i 's/VAR_NAMESPACE/{{ .Values.app.namespace }}/g' check-confidence-poc-detran/*
+                    sed -i 's/VAR_NAMESPACE/{{ .Values.app.namespace }}/g' traffiic-violation-detection/*
 
         - resources:
             limits:

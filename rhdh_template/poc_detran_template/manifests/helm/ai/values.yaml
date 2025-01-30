@@ -4,7 +4,7 @@ app:
   cluster: ${{values.cluster}}
   user: ${{values.user}}
   workbench:
-    name: 'my-workbench'
+    name: 'poc-dev-workbench'
     image: pytorch:2024.1
   dashboard:
     route: https://rhods-dashboard-redhat-ods-applications${{values.cluster}}

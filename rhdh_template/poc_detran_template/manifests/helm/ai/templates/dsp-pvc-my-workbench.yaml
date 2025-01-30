@@ -3,7 +3,7 @@ apiVersion: v1
 metadata:
   annotations:
     openshift.io/description: ''
-    openshift.io/display-name: My Workbench
+    openshift.io/display-name: PoC RHOAI Workbench
     volume.beta.kubernetes.io/storage-provisioner: openshift-storage.rbd.csi.ceph.com
     volume.kubernetes.io/storage-provisioner: openshift-storage.rbd.csi.ceph.com
     argocd.argoproj.io/sync-wave: "-2"
