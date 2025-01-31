@@ -135,11 +135,21 @@ spec:
             - name: NOTEBOOK_ARGS
               value: |-
                 --ServerApp.port=8888
-                                  --ServerApp.token=''
-                                  --ServerApp.password=''
-                                  --ServerApp.base_url=/notebook/{{ .Values.app.namespace }}/{{ .Values.app.workbench.name }}
-                                  --ServerApp.quit_button=False
-                                  --ServerApp.tornado_settings={"user":"{{ .Values.app.user }}","hub_host":"{{ .Values.app.dashboard.route }}","hub_prefix":"/projects/{{ .Values.app.namespace }}"}
+                --ServerApp.token=''
+                --ServerApp.password=''
+                --ServerApp.base_url=/notebook/{{ .Values.app.namespace }}/{{ .Values.app.workbench.name }}
+                --ServerApp.quit_button=False
+                --ServerApp.tornado_settings={"user":"{{ .Values.app.user }}","hub_host":"{{ .Values.app.dashboard.route }}","hub_prefix":"/projects/{{ .Values.app.namespace }}"}
+            - name: MPLBACKEND
+              value: 'Agg'
+            - name: OPENCV_VIDEOIO_PLUGIN_LIST
+              value: '""'
+            - name: OPENCV_LOG_LEVEL
+              value: 'ERROR'
+            - name: DISPLAY
+              value: :0
+            - name: INSTALL_HEADLESS_DEPS
+              value: "1"
             - name: JUPYTER_IMAGE
               value: >-
                 image-registry.openshift-image-registry.svc:5000/redhat-ods-applications/{{ .Values.app.workbench.image }}
@@ -187,6 +197,10 @@ spec:
                     git clone https://{{ .Values.git.host}}/workbench-setup/traffiic-violation-detection.git
 
                     sed -i 's/VAR_NAMESPACE/{{ .Values.app.namespace }}/g' traffiic-violation-detection/*
+
+                    cd traffiic-violation-detection
+                    pip install -r requirements.txt
+                    cd ..
 
         - resources:
             limits:
