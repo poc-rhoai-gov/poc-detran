@@ -23,27 +23,86 @@ spec:
   template:
     spec:
       affinity: {}
-      initContainers:
-        - name: init-mysql
+      volumes:
+        - name: {{ .Values.app.workbench.name }}
+          persistentVolumeClaim:
+            claimName: {{ .Values.app.workbench.name }}
+        - name: elyra-dsp-details
+          secret:
+            secretName: ds-pipeline-config
+        - emptyDir:
+            medium: Memory
+          name: shm
+        - configMap:
+            items:
+              - key: ca-bundle.crt
+                path: ca-bundle.crt
+            name: workbench-trusted-ca-bundle
+            optional: true
+          name: trusted-ca
+        - name: oauth-config
+          secret:
+            defaultMode: 420
+            secretName: {{ .Values.app.workbench.name }}-oauth-config
+        - name: tls-certificates
+          secret:
+            defaultMode: 420
+            secretName: {{ .Values.app.workbench.name }}-tls
+        - name: mysql-data
+          persistentVolumeClaim:
+            claimName: mysql-data-{{ .Values.app.workbench.name }}
+      containers:
+        - name: mysql
           image: registry.redhat.io/rhel8/mysql-80
           env:
             - name: MYSQL_USER
               value: hpfeffer
             - name: MYSQL_PASSWORD
-              value: hpfeffer  
+              value: hpfeffer
             - name: MYSQL_DATABASE
               value: traffic_violations_db
             - name: MYSQL_ROOT_PASSWORD
               value: admin
           ports:
             - containerPort: 3306
+              name: mysql
+              protocol: TCP
           volumeMounts:
             - name: mysql-data
               mountPath: /var/lib/mysql/data
-      volumes:
-        - name: mysql-data
-          emptyDir: {}
-      containers:
+          resources:
+            limits:
+              cpu: '1'
+              memory: 1Gi
+            requests:
+              cpu: '500m'
+              memory: 512Mi
+          livenessProbe:
+            exec:
+              command:
+                - mysqladmin
+                - ping
+                - -h
+                - localhost
+                - -u
+                - hpfeffer
+                - --password=hpfeffer
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+                - mysqladmin
+                - ping
+                - -h
+                - localhost
+                - -u
+                - hpfeffer
+                - --password=hpfeffer
+            initialDelaySeconds: 5
+            periodSeconds: 2
+            timeoutSeconds: 1
         - resources:
             limits:
               cpu: '2'
@@ -193,28 +252,3 @@ spec:
               --logout-url={{ .Values.app.dashboard.route }}/projects/{{ .Values.app.namespace }}?notebookLogout={{ .Values.app.workbench.name }}
       enableServiceLinks: false
       serviceAccountName: {{ .Values.app.workbench.name }}
-      volumes:
-        - name: {{ .Values.app.workbench.name }}
-          persistentVolumeClaim:
-            claimName: {{ .Values.app.workbench.name }}
-        - name: elyra-dsp-details
-          secret:
-            secretName: ds-pipeline-config
-        - emptyDir:
-            medium: Memory
-          name: shm
-        - configMap:
-            items:
-              - key: ca-bundle.crt
-                path: ca-bundle.crt
-            name: workbench-trusted-ca-bundle
-            optional: true
-          name: trusted-ca
-        - name: oauth-config
-          secret:
-            defaultMode: 420
-            secretName: {{ .Values.app.workbench.name }}-oauth-config
-        - name: tls-certificates
-          secret:
-            defaultMode: 420
-            secretName: {{ .Values.app.workbench.name }}-tls

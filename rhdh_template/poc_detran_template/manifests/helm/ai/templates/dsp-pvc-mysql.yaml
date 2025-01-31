@@ -1,0 +1,22 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  annotations:
+    openshift.io/description: 'MySQL Data Storage for Traffic Violations Detection'
+    openshift.io/display-name: MySQL Data
+    volume.beta.kubernetes.io/storage-provisioner: openshift-storage.rbd.csi.ceph.com
+    volume.kubernetes.io/storage-provisioner: openshift-storage.rbd.csi.ceph.com
+    argocd.argoproj.io/sync-wave: "-2"
+  name: mysql-data-{{ .Values.app.workbench.name }}
+  namespace: {{ .Values.app.namespace }}
+  finalizers:
+    - kubernetes.io/pvc-protection
+  labels:
+    app: {{ .Values.app.workbench.name }}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  volumeMode: Filesystem 
